@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NONALTZ BEE — WEB CREATIVE PROPOSAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #faf8f4; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const COLORS = {
+  ink: "#1a1715",
+  warm: "#c8a96e",
+  warmLight: "#f5eed9",
+  warmDark: "#8b7340",
+  green: "#2d6b4f",
+  greenLight: "#e4f0ea",
+  red: "#b5412b",
+  redLight: "#fceae6",
+  bg: "#faf8f4",
+  card: "#ffffff",
+  muted: "#8a8580",
+  border: "#e8e4de",
+};
+
+function SectionTag({ children, color = COLORS.warm }) {
+  return (
+    <span style={{
+      display: "inline-block",
+      padding: "2px 8px",
+      borderRadius: "3px",
+      fontSize: "10px",
+      fontWeight: 700,
+      color: "#fff",
+      background: color,
+      letterSpacing: "0.8px",
+      textTransform: "uppercase",
+    }}>{children}</span>
+  );
+}
+
+function WinBadge({ children }) {
+  return (
+    <span style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "3px",
+      padding: "2px 7px",
+      borderRadius: "3px",
+      fontSize: "10px",
+      fontWeight: 600,
+      color: COLORS.green,
+      background: COLORS.greenLight,
+      marginRight: "4px",
+      marginBottom: "4px",
+    }}>✓ {children}</span>
+  );
+}
+
+function SourceTag({ children }) {
+  return (
+    <span style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "3px",
+      padding: "2px 7px",
+      borderRadius: "3px",
+      fontSize: "10px",
+      fontWeight: 600,
+      color: COLORS.warmDark,
+      background: COLORS.warmLight,
+      marginRight: "4px",
+      marginBottom: "4px",
+    }}>← {children}</span>
+  );
+}
+
+function LPWireframe() {
+  const sections = [
+    {
+      id: "fv",
+      label: "FIRST VIEW",
+      height: 320,
+      bg: "#1a1715",
+      dark: true,
+      title: "ファーストビュー",
+      desc: "新聞広告の感情フックをそのまま第一視認に。スクロールせずに「自分ごと」にさせる。",
+      sources: ["NP01 感情コピー", "NP05 憧れ人物"],
+      wins: ["感情ファースト", "コピーは短く"],
+      wireframe: (
+        <div style={{ padding: "20px", color: "#fff", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative" }}>
+          <div style={{ position: "absolute", top: 12, right: 16, background: COLORS.warm, color: "#fff", padding: "4px 10px", borderRadius: "3px", fontSize: "10px", fontWeight: 700 }}>日本で唯一※</div>
+          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>認知機能研究の世界的権威 監修</div>
+          <div style={{ fontSize: "26px", fontWeight: 900, lineHeight: 1.4, marginBottom: 10, letterSpacing: "-0.5px" }}>
+            家族に心配を<br />かける前に。
+          </div>
+          <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: 16 }}>
+            あきらめないで。<br />認知機能は、対策できます。
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{ width: 50, height: 70, borderRadius: 4, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "rgba(255,255,255,0.4)" }}>商品画像</div>
+            <div>
+              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>まずは7日間お試し</div>
+              <div style={{ fontSize: "20px", fontWeight: 900, color: COLORS.warm }}>1,080<span style={{ fontSize: 11 }}>円</span><span style={{ fontSize: 10, fontWeight: 400, color: "rgba(255,255,255,0.5)" }}> 送料無料</span></div>
+            </div>
+          </div>
+          <div style={{ marginTop: 12, background: COLORS.warm, color: "#fff", textAlign: "center", padding: "10px", borderRadius: 6, fontSize: 13, fontWeight: 700, letterSpacing: "0.5px" }}>
+            お試しセットを申し込む →
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "empathy",
+      label: "SECTION 01",
+      height: 200,
+      bg: "#fff",
+      dark: false,
+      title: "共感・課題提起",
+      desc: "NP04の生活シーン図解を転用。「あ、自分のことだ」と思わせる。",
+      sources: ["NP04 生活シーン", "NP04 4つの認知機能"],
+      wins: ["生活シーンで自分事化", "感情フック継続"],
+      wireframe: (
+        <div style={{ padding: "20px" }}>
+          <div style={{ textAlign: "center", fontSize: 15, fontWeight: 700, marginBottom: 16, color: COLORS.ink }}>こんなこと、ありませんか？</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {["人の名前が\n出てこない", "「あれ」「それ」\nが増えた", "鍵をどこに\n置いたか忘れる", "集中力が\n続かない"].map((t, i) => (
+              <div key={i} style={{
+                background: COLORS.bg,
+                borderRadius: 8,
+                padding: "12px",
+                textAlign: "center",
+                fontSize: 11,
+                color: COLORS.ink,
+                lineHeight: 1.5,
+                whiteSpace: "pre-line",
+                border: `1px solid ${COLORS.border}`,
+              }}>
+                <div style={{ fontSize: 20, marginBottom: 4 }}>{["😰", "💬", "🔑", "📖"][i]}</div>
+                {t}
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 14, fontSize: 12, color: COLORS.muted }}>
+            それは年齢による認知機能の低下サインかもしれません
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "authority",
+      label: "SECTION 02",
+      height: 220,
+      bg: COLORS.bg,
+      dark: false,
+      title: "権威性・信頼",
+      desc: "ブレデセン博士＋高木教授の「ダブル権威」で信頼を構築。新聞広告では単体だった権威要素をLPでは統合。",
+      sources: ["NP01 博士の権威", "NP05 日本人教授"],
+      wins: ["世界的権威", "日本人の信頼できる推薦者"],
+      wireframe: (
+        <div style={{ padding: "20px" }}>
+          <div style={{ textAlign: "center", fontSize: 14, fontWeight: 700, marginBottom: 16, color: COLORS.ink }}>認知機能研究の世界的権威が監修</div>
+          <div style={{ display: "flex", gap: 12, marginBottom: 14 }}>
+            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "#ddd", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#999" }}>博士写真</div>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700 }}>デール・ブレデセン博士（MD）</div>
+              <div style={{ fontSize: 10, color: COLORS.muted, lineHeight: 1.5, marginTop: 2 }}>カリフォルニア工科大学卒業。著書は世界35カ国で翻訳出版。認知機能研究の世界的権威。</div>
+            </div>
+          </div>
+          <div style={{ borderTop: `1px solid ${COLORS.border}`, paddingTop: 14, display: "flex", gap: 12 }}>
+            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "#ddd", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, color: "#999" }}>教授写真</div>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700 }}>高木 美也子 教授（73歳）</div>
+              <div style={{ fontSize: 10, color: COLORS.muted, lineHeight: 1.5, marginTop: 2 }}>東京通信大学 特任教授。73歳で現役。「人生100年時代、認知機能の維持対策は不可欠です」</div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "product",
+      label: "SECTION 03",
+      height: 230,
+      bg: "#fff",
+      dark: false,
+      title: "商品紹介・5つの成分",
+      desc: "機能性表示食品としての信頼＋5成分の独自配合。新聞では情報量の限界があったエビデンスをWEBで補完。",
+      sources: ["NP04 成分配合", "全原稿 機能性表示食品"],
+      wins: ["日本で唯一", "エビデンス"],
+      wireframe: (
+        <div style={{ padding: "20px" }}>
+          <div style={{ textAlign: "center", marginBottom: 14 }}>
+            <div style={{ display: "inline-block", background: COLORS.warm, color: "#fff", padding: "4px 12px", borderRadius: 4, fontSize: 11, fontWeight: 700, marginBottom: 8 }}>機能性表示食品 ｜ 日本で唯一※</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.ink }}>5つの機能性関与成分を独自配合</div>
+          </div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", marginBottom: 14 }}>
+            {["プロポリス\nエキス", "クルクミン", "イチョウ葉\nフラボノイド", "イチョウ葉\nテルペンラクトン", "ホスファチジル\nセリン"].map((s, i) => (
+              <div key={i} style={{
+                background: i === 0 ? COLORS.warmLight : COLORS.bg,
+                border: i === 0 ? `2px solid ${COLORS.warm}` : `1px solid ${COLORS.border}`,
+                borderRadius: 6,
+                padding: "8px 10px",
+                fontSize: 9,
+                textAlign: "center",
+                lineHeight: 1.4,
+                whiteSpace: "pre-line",
+                minWidth: 70,
+              }}>
+                {i === 0 && <div style={{ fontSize: 8, color: COLORS.warm, fontWeight: 700, marginBottom: 2 }}>日本初※</div>}
+                {s}
+              </div>
+            ))}
+          </div>
+          <div style={{ background: COLORS.greenLight, borderRadius: 6, padding: 10, fontSize: 10, color: COLORS.green, lineHeight: 1.6, textAlign: "center" }}>
+            12週間の飲用試験で記憶力・注意力・集中力・判断力の維持を確認<br />
+            <span style={{ fontSize: 9, color: COLORS.muted }}>※40〜79歳の82名対象 プラセボ対照試験</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "voice",
+      label: "SECTION 04",
+      height: 170,
+      bg: COLORS.bg,
+      dark: false,
+      title: "愛用者の声",
+      desc: "NP04で効いていた「日本人の顔写真＋生活実感コメント」をWEBで拡張。動画も検討。",
+      sources: ["NP04 愛用者コメント"],
+      wins: ["日本人の顔", "生活実感"],
+      wireframe: (
+        <div style={{ padding: "20px" }}>
+          <div style={{ textAlign: "center", fontSize: 14, fontWeight: 700, marginBottom: 14, color: COLORS.ink }}>ご愛用者の声</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {[
+              { age: "70代女性", text: "頭のモヤが晴れてスッキリ。太極拳も40年続けています。" },
+              { age: "60代男性", text: "仕事の集中力が戻ってきた。家族も安心しています。" },
+            ].map((v, i) => (
+              <div key={i} style={{
+                flex: 1,
+                background: "#fff",
+                borderRadius: 8,
+                padding: 12,
+                border: `1px solid ${COLORS.border}`,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#e0ddd8", fontSize: 7, display: "flex", alignItems: "center", justifyContent: "center", color: "#999" }}>写真</div>
+                  <div style={{ fontSize: 10, color: COLORS.muted, fontWeight: 600 }}>{v.age}</div>
+                </div>
+                <div style={{ fontSize: 11, lineHeight: 1.6, color: COLORS.ink }}>「{v.text}」</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "cta",
+      label: "CTA",
+      height: 180,
+      bg: COLORS.ink,
+      dark: true,
+      title: "クロージング CTA",
+      desc: "新聞広告の鉄板オファー（1,080円＋脳トレブック）をWEBのCTAに。限定感と安心感を両立。",
+      sources: ["全勝ち原稿 オファー構造"],
+      wins: ["1,080円お試し", "脳トレブック特典"],
+      wireframe: (
+        <div style={{ padding: "20px", color: "#fff", textAlign: "center" }}>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>まずは7日間、実感してください</div>
+          <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 4 }}>
+            お試しセット <span style={{ color: COLORS.warm }}>1,080</span><span style={{ fontSize: 13 }}>円（税込）</span>
+          </div>
+          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 12 }}>送料無料 ＋ 初回限定「脳トレブック」プレゼント</div>
+          <div style={{ background: COLORS.warm, padding: "12px 24px", borderRadius: 8, fontSize: 15, fontWeight: 700, display: "inline-block", marginBottom: 10 }}>
+            今すぐお試しセットを申し込む
+          </div>
+          <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>※ お届け目安：3〜5営業日 ｜ 定期購入ではありません</div>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 6px 0", color: COLORS.ink }}>LP構成ワイヤーフレーム</h2>
+        <p style={{ fontSize: 12, color: COLORS.muted, margin: 0, lineHeight: 1.6 }}>
+          新聞広告の勝ちパターンをセクションごとにマッピング。左にワイヤーフレーム、右に設計根拠を配置。
+        </p>
+      </div>
+
+      {sections.map((sec, i) => (
+        <div key={sec.id} style={{
+          display: "grid",
+          gridTemplateColumns: "280px 1fr",
+          gap: 0,
+          marginBottom: 2,
+          minHeight: sec.height,
+        }}>
+          <div style={{
+            background: sec.bg,
+            borderRadius: i === 0 ? "10px 10px 0 0" : i === sections.length - 1 ? "0 0 10px 10px" : 0,
+            overflow: "hidden",
+            border: sec.dark ? "none" : `1px solid ${COLORS.border}`,
+            borderBottom: "none",
+          }}>
+            {sec.wireframe}
+          </div>
+          <div style={{
+            padding: "16px 20px",
+            borderBottom: `1px solid ${COLORS.border}`,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <SectionTag color={sec.dark ? COLORS.ink : COLORS.warm}>{sec.label}</SectionTag>
+              <span style={{ fontSize: 14, fontWeight: 700, color: COLORS.ink }}>{sec.title}</span>
+            </div>
+            <p style={{ fontSize: 12, color: COLORS.muted, lineHeight: 1.7, margin: "0 0 10px 0" }}>{sec.desc}</p>
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.warmDark, marginBottom: 4 }}>転用元の新聞原稿要素</div>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {sec.sources.map((s, si) => <SourceTag key={si}>{s}</SourceTag>)}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.green, marginBottom: 4 }}>活用する勝ち要素</div>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {sec.wins.map((w, wi) => <WinBadge key={wi}>{w}</WinBadge>)}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function BannerRoughs() {
+  const [selectedAxis, setSelectedAxis] = useState(0);
+
+  const axes = [
+    {
+      name: "軸A：感情フック型",
+      source: "NP01（CPO ¥57,056）転用",
+      desc: "最もCPOが良かった「家族に心配をかける前に。」の感情トリガーをバナーに凝縮",
+      banners: [
+        {
+          format: "横長 1200×628",
+          width: 440,
+          height: 230,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#1a1715", display: "flex", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, right: 0, width: "40%", height: "100%", background: "linear-gradient(135deg, rgba(200,169,110,0.15), transparent)" }} />
+              <div style={{ flex: 1, padding: "24px 20px", display: "flex", flexDirection: "column", justifyContent: "center", zIndex: 1 }}>
+                <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", marginBottom: 4, letterSpacing: 1 }}>認知機能研究の世界的権威 監修</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "#fff", lineHeight: 1.35, marginBottom: 8 }}>
+                  家族に心配を<br />かける前に。
+                </div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", lineHeight: 1.5, marginBottom: 10 }}>あきらめないで。<br />認知機能は、対策できます。</div>
+                <div style={{ background: COLORS.warm, color: "#fff", padding: "6px 14px", borderRadius: 4, fontSize: 10, fontWeight: 700, alignSelf: "flex-start" }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+              <div style={{ width: "30%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <div style={{ width: 50, height: 70, borderRadius: 4, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, color: "rgba(255,255,255,0.3)" }}>商品</div>
+                <div style={{ background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+              </div>
+            </div>
+          ),
+        },
+        {
+          format: "正方形 1080×1080",
+          width: 260,
+          height: 260,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#1a1715", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 8, right: 8, background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+              <div style={{ flex: 1, padding: "20px 16px 10px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 7, color: "rgba(255,255,255,0.4)", marginBottom: 3 }}>認知機能研究の世界的権威 監修</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "#fff", lineHeight: 1.35, marginBottom: 6 }}>
+                  家族に心配を<br />かける前に。
+                </div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", lineHeight: 1.5 }}>あきらめないで。認知機能は、対策できます。</div>
+              </div>
+              <div style={{ background: "rgba(255,255,255,0.05)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 36, height: 50, borderRadius: 3, background: "rgba(255,255,255,0.1)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "rgba(255,255,255,0.3)" }}>商品</div>
+                <div>
+                  <div style={{ fontSize: 8, color: "rgba(255,255,255,0.5)" }}>ノンアルツBee お試し7日分</div>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.warm }}>1,080<span style={{ fontSize: 9 }}>円</span></div>
+                </div>
+                <div style={{ marginLeft: "auto", background: COLORS.warm, color: "#fff", padding: "5px 10px", borderRadius: 4, fontSize: 9, fontWeight: 700 }}>詳しく →</div>
+              </div>
+            </div>
+          ),
+        },
+        {
+          format: "縦長 1080×1920（Stories）",
+          width: 160,
+          height: 284,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#1a1715", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "30%", background: "linear-gradient(180deg, rgba(200,169,110,0.12), transparent)" }} />
+              <div style={{ padding: "20px 14px 8px", zIndex: 1 }}>
+                <div style={{ background: COLORS.warm, color: "#fff", padding: "2px 6px", borderRadius: 2, fontSize: 7, fontWeight: 700, display: "inline-block", marginBottom: 6 }}>日本で唯一※</div>
+                <div style={{ fontSize: 6, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>認知機能研究の世界的権威 監修</div>
+                <div style={{ fontSize: 16, fontWeight: 900, color: "#fff", lineHeight: 1.4 }}>
+                  家族に<br />心配を<br />かける前に。
+                </div>
+              </div>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 44, height: 62, borderRadius: 3, background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "rgba(255,255,255,0.3)" }}>商品</div>
+              </div>
+              <div style={{ padding: "10px 14px 14px", textAlign: "center" }}>
+                <div style={{ fontSize: 9, color: "rgba(255,255,255,0.5)", marginBottom: 4 }}>あきらめないで。認知機能は対策できます。</div>
+                <div style={{ background: COLORS.warm, color: "#fff", padding: "8px", borderRadius: 5, fontSize: 10, fontWeight: 700 }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      name: "軸B：憧れ人物型",
+      source: "NP05（CPO ¥64,118）転用",
+      desc: "「73歳、現役大学教授」のギャップと憧れ訴求。日本人の顔がCTRを上げる仮説。",
+      banners: [
+        {
+          format: "横長 1200×628",
+          width: 440,
+          height: 230,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#fff", display: "flex", position: "relative", overflow: "hidden" }}>
+              <div style={{ width: "35%", background: COLORS.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRight: `3px solid ${COLORS.warm}` }}>
+                <div style={{ width: 60, height: 60, borderRadius: "50%", background: "#ddd", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 7, color: "#999" }}>教授写真</div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: COLORS.ink }}>高木 美也子</div>
+                <div style={{ fontSize: 7, color: COLORS.muted }}>東京通信大学 特任教授</div>
+                <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.warm, marginTop: 2 }}>73歳</div>
+              </div>
+              <div style={{ flex: 1, padding: "20px 18px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 8, color: COLORS.warm, fontWeight: 700, marginBottom: 4 }}>73歳、現役大学教授も提言</div>
+                <div style={{ fontSize: 17, fontWeight: 900, color: COLORS.ink, lineHeight: 1.4, marginBottom: 8 }}>
+                  認知機能維持は、<br />サプリで対策する時代。
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 36, height: 50, borderRadius: 3, background: COLORS.bg, border: `1px solid ${COLORS.border}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "#bbb" }}>商品</div>
+                  <div>
+                    <div style={{ fontSize: 8, color: COLORS.muted }}>世界的権威監修 ノンアルツBee</div>
+                    <div style={{ fontSize: 13, fontWeight: 900, color: COLORS.ink }}>お試し7日分 <span style={{ color: COLORS.warm }}>1,080</span>円</div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ position: "absolute", top: 8, right: 8, background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+            </div>
+          ),
+        },
+        {
+          format: "正方形 1080×1080",
+          width: 260,
+          height: 260,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#fff", display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 8, right: 8, background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+              <div style={{ background: COLORS.bg, padding: "14px", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#ddd", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "#999" }}>教授写真</div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.warm }}>73歳、現役。</div>
+                  <div style={{ fontSize: 8, color: COLORS.muted }}>高木美也子 東京通信大学 特任教授</div>
+                </div>
+              </div>
+              <div style={{ flex: 1, padding: "14px 16px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 900, color: COLORS.ink, lineHeight: 1.4, marginBottom: 8 }}>
+                  認知機能維持は、<br />サプリで対策する時代。
+                </div>
+                <div style={{ fontSize: 9, color: COLORS.muted, lineHeight: 1.6 }}>世界的権威ブレデセン博士監修。5つの機能性関与成分を独自配合。</div>
+              </div>
+              <div style={{ padding: "0 16px 14px" }}>
+                <div style={{ background: COLORS.ink, color: "#fff", textAlign: "center", padding: "8px", borderRadius: 5, fontSize: 10, fontWeight: 700 }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+            </div>
+          ),
+        },
+        {
+          format: "縦長 1080×1920（Stories）",
+          width: 160,
+          height: 284,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: "#fff", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ background: COLORS.bg, padding: "14px 12px", textAlign: "center" }}>
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#ddd", margin: "0 auto 6px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "#999" }}>写真</div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: COLORS.warm }}>73歳、現役。</div>
+                <div style={{ fontSize: 7, color: COLORS.muted }}>東京通信大学 特任教授</div>
+              </div>
+              <div style={{ flex: 1, padding: "12px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+                <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.ink, lineHeight: 1.5, marginBottom: 6 }}>
+                  認知機能維持は、<br />サプリで<br />対策する時代。
+                </div>
+                <div style={{ background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 7, fontWeight: 700 }}>日本で唯一※</div>
+              </div>
+              <div style={{ padding: "10px 12px 14px", textAlign: "center" }}>
+                <div style={{ background: COLORS.ink, color: "#fff", padding: "8px", borderRadius: 5, fontSize: 10, fontWeight: 700 }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      name: "軸C：生活実感・共感型",
+      source: "NP04（CPO ¥58,188）転用",
+      desc: "「あ、自分のことだ」と思わせる生活シーンの共感フック。SNS広告との親和性が高い。",
+      banners: [
+        {
+          format: "横長 1200×628",
+          width: 440,
+          height: 230,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: COLORS.bg, display: "flex", position: "relative", overflow: "hidden" }}>
+              <div style={{ flex: 1, padding: "20px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: COLORS.ink, lineHeight: 1.4, marginBottom: 4 }}>
+                  「あれ」「それ」が<br />増えてきたら。
+                </div>
+                <div style={{ fontSize: 10, color: COLORS.muted, lineHeight: 1.6, marginBottom: 12 }}>
+                  それは年齢による認知機能の低下サインかもしれません。<br />認知機能は、サプリで対策できる時代です。
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 40, height: 56, borderRadius: 3, background: "#ddd", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "#bbb" }}>商品</div>
+                  <div>
+                    <div style={{ fontSize: 8, color: COLORS.muted }}>ノンアルツBee</div>
+                    <div style={{ background: COLORS.ink, color: "#fff", padding: "5px 12px", borderRadius: 4, fontSize: 10, fontWeight: 700, marginTop: 3 }}>
+                      7日間お試し 1,080円 →
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ width: "32%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 6, padding: "10px" }}>
+                {["人の名前が\n出てこない…", "鍵、どこに\n置いたっけ？"].map((t, i) => (
+                  <div key={i} style={{
+                    background: "#fff",
+                    borderRadius: 8,
+                    padding: "8px 10px",
+                    fontSize: 9,
+                    color: COLORS.ink,
+                    lineHeight: 1.4,
+                    whiteSpace: "pre-line",
+                    textAlign: "center",
+                    border: `1px solid ${COLORS.border}`,
+                    width: "100%",
+                  }}>{t}</div>
+                ))}
+              </div>
+              <div style={{ position: "absolute", top: 8, right: 8, background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+            </div>
+          ),
+        },
+        {
+          format: "正方形 1080×1080",
+          width: 260,
+          height: 260,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: COLORS.bg, display: "flex", flexDirection: "column", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: 8, right: 8, background: COLORS.warm, color: "#fff", padding: "2px 8px", borderRadius: 2, fontSize: 8, fontWeight: 700 }}>日本で唯一※</div>
+              <div style={{ padding: "20px 16px 10px" }}>
+                <div style={{ fontSize: 18, fontWeight: 900, color: COLORS.ink, lineHeight: 1.4 }}>
+                  「あれ」「それ」が<br />増えてきたら。
+                </div>
+              </div>
+              <div style={{ padding: "0 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginBottom: 10 }}>
+                {["人の名前が\n出てこない", "鍵をどこに\n置いたか…", "集中力が\n続かない", "同じ話を\nしてしまう"].map((t, i) => (
+                  <div key={i} style={{
+                    background: "#fff",
+                    borderRadius: 6,
+                    padding: "7px",
+                    fontSize: 8,
+                    color: COLORS.ink,
+                    lineHeight: 1.4,
+                    whiteSpace: "pre-line",
+                    textAlign: "center",
+                    border: `1px solid ${COLORS.border}`,
+                  }}>{t}</div>
+                ))}
+              </div>
+              <div style={{ marginTop: "auto", padding: "0 16px 14px" }}>
+                <div style={{ fontSize: 9, color: COLORS.muted, textAlign: "center", marginBottom: 6 }}>認知機能は、サプリで対策できる時代です。</div>
+                <div style={{ background: COLORS.ink, color: "#fff", textAlign: "center", padding: "8px", borderRadius: 5, fontSize: 10, fontWeight: 700 }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+            </div>
+          ),
+        },
+        {
+          format: "縦長 1080×1920（Stories）",
+          width: 160,
+          height: 284,
+          render: (
+            <div style={{ width: "100%", height: "100%", background: COLORS.bg, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ padding: "16px 12px 8px" }}>
+                <div style={{ fontSize: 14, fontWeight: 900, color: COLORS.ink, lineHeight: 1.4 }}>
+                  「あれ」<br />「それ」が<br />増えてきたら。
+                </div>
+              </div>
+              <div style={{ padding: "0 10px", display: "flex", flexDirection: "column", gap: 4 }}>
+                {["人の名前が出てこない…", "鍵をどこに置いたか…"].map((t, i) => (
+                  <div key={i} style={{
+                    background: "#fff",
+                    borderRadius: 6,
+                    padding: "7px 10px",
+                    fontSize: 8,
+                    color: COLORS.ink,
+                    textAlign: "center",
+                    border: `1px solid ${COLORS.border}`,
+                  }}>{t}</div>
+                ))}
+              </div>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 40, height: 56, borderRadius: 3, background: "#ddd", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 6, color: "#bbb" }}>商品</div>
+              </div>
+              <div style={{ padding: "8px 12px 14px", textAlign: "center" }}>
+                <div style={{ fontSize: 8, color: COLORS.muted, marginBottom: 4 }}>認知機能は、対策できます。</div>
+                <div style={{ background: COLORS.ink, color: "#fff", padding: "8px", borderRadius: 5, fontSize: 10, fontWeight: 700 }}>
+                  7日間お試し 1,080円 →
+                </div>
+              </div>
+            </div>
+          ),
+        },
+      ],
+    },
+  ];
+
+  const axis = axes[selectedAxis];
+
+  return (
+    <div>
+      <div style={{ marginBottom: 20 }}>
+        <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 6px 0", color: COLORS.ink }}>バナーデザインラフ</h2>
+        <p style={{ fontSize: 12, color: COLORS.muted, margin: 0, lineHeight: 1.6 }}>
+          3つの訴求軸 × 3フォーマット（横長・正方形・縦長Stories）= 9パターンのラフ案
+        </p>
+      </div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        {axes.map((a, i) => (
+          <button
+            key={i}
+            onClick={() => setSelectedAxis(i)}
+            style={{
+              flex: 1,
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: selectedAxis === i ? `2px solid ${COLORS.ink}` : `1px solid ${COLORS.border}`,
+              background: selectedAxis === i ? COLORS.ink : "#fff",
+              color: selectedAxis === i ? "#fff" : COLORS.ink,
+              fontSize: 12,
+              fontWeight: selectedAxis === i ? 700 : 400,
+              cursor: "pointer",
+              textAlign: "left",
+              lineHeight: 1.4,
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: 2 }}>{a.name}</div>
+            <div style={{ fontSize: 10, opacity: 0.7 }}>{a.source}</div>
+          </button>
+        ))}
+      </div>
+
+      <div style={{
+        background: COLORS.warmLight,
+        borderRadius: 8,
+        padding: "12px 16px",
+        marginBottom: 20,
+        fontSize: 12,
+        color: COLORS.warmDark,
+        lineHeight: 1.6,
+        borderLeft: `3px solid ${COLORS.warm}`,
+      }}>
+        {axis.desc}
+      </div>
+
+      <div style={{ display: "flex", gap: 16, alignItems: "flex-start", justifyContent: "center", flexWrap: "wrap" }}>
+        {axis.banners.map((b, i) => (
+          <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{
+              width: b.width,
+              height: b.height,
+              borderRadius: 8,
+              overflow: "hidden",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+              border: `1px solid ${COLORS.border}`,
+            }}>
+              {b.render}
+            </div>
+            <div style={{ marginTop: 8, fontSize: 10, color: COLORS.muted, fontWeight: 600, textAlign: "center" }}>{b.format}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab] = useState("lp");
+
+  return (
+    <div style={{
+      fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
+      maxWidth: "960px",
+      margin: "0 auto",
+      padding: "24px 16px",
+      color: COLORS.ink,
+      background: COLORS.bg,
+      minHeight: "100vh",
+    }}>
+      <div style={{ marginBottom: 24, borderBottom: `2px solid ${COLORS.ink}`, paddingBottom: 16 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: COLORS.warm, letterSpacing: 2, marginBottom: 4 }}>NONALTZ BEE — WEB CREATIVE PROPOSAL</div>
+        <h1 style={{ fontSize: 20, fontWeight: 900, margin: "0 0 4px 0", letterSpacing: "-0.5px" }}>
+          新聞広告CPO分析 → デジタル広告クリエイティブ設計
+        </h1>
+        <p style={{ fontSize: 12, color: COLORS.muted, margin: 0 }}>
+          CPO実績に基づく勝ち要素をLP構成・バナーデザインに転用
+        </p>
+      </div>
+
+      <div style={{ display: "flex", gap: 0, marginBottom: 24 }}>
+        {[
+          { key: "lp", label: "LP構成ワイヤーフレーム" },
+          { key: "banner", label: "バナーデザインラフ" },
+        ].map(t => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            style={{
+              flex: 1,
+              padding: "12px",
+              border: "none",
+              background: tab === t.key ? COLORS.ink : "transparent",
+              color: tab === t.key ? "#fff" : COLORS.muted,
+              fontSize: 13,
+              fontWeight: tab === t.key ? 700 : 400,
+              cursor: "pointer",
+              borderBottom: tab === t.key ? "none" : `2px solid ${COLORS.border}`,
+              borderRadius: tab === t.key ? "8px 8px 0 0" : 0,
+            }}
+          >{t.label}</button>
+        ))}
+      </div>
+
+      {tab === "lp" && <LPWireframe />}
+      {tab === "banner" && <BannerRoughs />}
+
+      <div style={{
+        marginTop: 32,
+        padding: "16px",
+        background: "rgba(0,0,0,0.04)",
+        borderRadius: 8,
+        fontSize: 11,
+        color: COLORS.muted,
+        lineHeight: 1.7,
+      }}>
+        <strong style={{ color: COLORS.ink }}>設計思想：</strong>
+        新聞広告で実証済みの「勝ち要素」をゼロベースで再構成せず、デジタルフォーマットに最適化して転用することで、クリエイティブの的中率を高める。NP01とNP08の比較（同じ構成でコピーの長さだけでCPOが2倍変わる）が示すように、「何を言うか」と「どう言うか」の精度がレスポンスを決める。
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
