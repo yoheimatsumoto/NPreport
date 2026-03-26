@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NONALTZ BEE — CPO分析ダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #faf8f4; font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif; }
+
+  /* ── Password Gate ── */
+  #password-gate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #1a1715;
+  }
+  .pw-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 48px 40px;
+    width: 380px;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .pw-card .lock-icon {
+    width: 56px; height: 56px;
+    background: #f5eed9;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 24px;
+  }
+  .pw-card h1 {
+    font-size: 17px;
+    font-weight: 900;
+    color: #1a1715;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .pw-card .subtitle {
+    font-size: 12px;
+    color: #8a8580;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+  .pw-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e8e4de;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .pw-card input:focus { border-color: #c8a96e; }
+  .pw-card input.error { border-color: #c0392b; animation: shake 0.4s ease; }
+  .pw-card button {
+    width: 100%;
+    margin-top: 14px;
+    padding: 14px;
+    background: #1a1715;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .pw-card button:hover { background: #333; }
+  .pw-card .error-msg {
+    color: #c0392b;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%,60% { transform: translateX(-6px); }
+    40%,80% { transform: translateX(6px); }
+  }
+
+  #app-root { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="password-gate">
+  <div class="pw-card">
+    <div class="lock-icon">🔒</div>
+    <h1>閲覧にはパスワードが必要です</h1>
+    <div class="subtitle">共有されたパスワードを入力してください</div>
+    <input type="password" id="pw-input" placeholder="パスワード" autocomplete="off" />
+    <button id="pw-btn">ログイン</button>
+    <div class="error-msg" id="pw-error"></div>
+  </div>
+</div>
+
+<div id="app-root"><div id="root"></div></div>
+
+<script>
+// Simple hash for client-side gate (not cryptographic security, but sufficient for casual sharing)
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+const HASH = '9e1a417e930f9a1c4c40e8cbae1b50f4b3d18e5fd6c0e8eac2e5a9b1b6f7c285';
+
+// Pre-compute the actual hash on first load (we'll set it below)
+let correctHash = '';
+(async () => {
+  correctHash = await sha256('NonaltzBee2026');
+})();
+
+const input = document.getElementById('pw-input');
+const btn = document.getElementById('pw-btn');
+const err = document.getElementById('pw-error');
+
+async function tryUnlock() {
+  const val = input.value;
+  const hash = await sha256(val);
+  if (hash === correctHash) {
+    document.getElementById('password-gate').style.display = 'none';
+    document.getElementById('app-root').style.display = 'block';
+    // Initialize React app after unlock
+    initApp();
+  } else {
+    input.classList.add('error');
+    err.textContent = 'パスワードが正しくありません';
+    setTimeout(() => { input.classList.remove('error'); }, 500);
+  }
+}
+
+btn.addEventListener('click', tryUnlock);
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter') tryUnlock(); });
+</script>
+
+<script type="text/babel">
+function initApp() {
+  const { useState } = React;
+
+  const data = [
+    { rank: 1, name: "脳のサプリ篇", id: "NP01", cpo: 57056, tier: "top", mainCopy: "家族に心配をかける前に。あきらめないで認知機能は対策できます。", hook: "感情フック（家族への心配）", tone: "希望・寄り添い", person: "ブレデセン博士（権威）", japanOnly: true, scene: false, userVoice: false, layout: "商品ボトル大＋博士写真＋感情コピー", winFactors: ["短く刺さる感情コピー", "「あきらめないで」の希望トーン", "情報を絞った構成"], loseFactors: [] },
+    { rank: 2, name: "雑誌風広告 博士篇", id: "NP04", cpo: 58188, tier: "top", mainCopy: "あの認知機能研究の世界的権威が監修！", hook: "興味喚起（世界的権威）", tone: "信頼・発見", person: "ブレデセン博士＋愛用者2名の顔写真", japanOnly: true, scene: true, userVoice: true, layout: "雑誌風レイアウト＋4つの認知機能図解＋体験談", winFactors: ["生活シーン図解", "愛用者の日本人顔写真", "TV出演フック"], loseFactors: [] },
+    { rank: 3, name: "高木先生篇", id: "NP05", cpo: 64118, tier: "top", mainCopy: "73歳、現役大学教授も提言。「認知機能維持は、サプリで対策！」", hook: "憧れ人物（73歳現役教授）", tone: "憧れ・説得力", person: "高木美也子教授（73歳）大きな顔写真", japanOnly: true, scene: false, userVoice: false, layout: "教授大写真＋推薦コメント＋商品", winFactors: ["日本人の信頼できる推薦者", "年齢×現役のギャップ", "「こうありたい」憧れ訴求"], loseFactors: [] },
+    { rank: 4, name: "思い出す力篇", id: "NP06", cpo: 78886, tier: "mid", mainCopy: "①記憶し、思い出す力 ②注意する力 ③集中する力 ④判断する力は対策できます。", hook: "機能説明から入る（感情フックなし）", tone: "教科書的・説明的", person: "ブレデセン博士のみ（小さめ）", japanOnly: true, scene: false, userVoice: false, layout: "①②③④ナンバリング＋脳イラスト＋商品", winFactors: ["4つの機能の明示"], loseFactors: ["感情フックがない", "ナンバリングが教科書的・冷たい", "脳イラストに生活感なし"] },
+    { rank: 5, name: "認知機能は衰える篇", id: "-", cpo: 79000, tier: "mid", mainCopy: "認知機能は衰える。だから、対策！", hook: "ネガティブ事実の提示", tone: "警告・危機感", person: "ブレデセン博士", japanOnly: true, scene: false, userVoice: false, layout: "大文字コピー＋4機能アイコン＋商品", winFactors: ["シンプルな構成"], loseFactors: ["「衰える」がネガティブすぎる", "恐怖訴求で読者が離脱しやすい"] },
+    { rank: 6, name: "脳のサプリロゴ篇②", id: "-", cpo: 83332, tier: "low", mainCopy: "認知機能研究の世界的権威が監修した脳のサプリ", hook: "権威＋機能コピー（説明的）", tone: "説明的・淡々", person: "ブレデセン博士（大きめ写真）", japanOnly: true, scene: false, userVoice: false, layout: "博士大写真＋商品＋特許取得バッジ", winFactors: ["特許取得の信頼要素"], loseFactors: ["感情フックなし", "NP01と似た構成だがコピーが説明的"] },
+    { rank: 7, name: "脳のサプリロゴ篇①", id: "-", cpo: 88000, tier: "low", mainCopy: "認知機能研究の世界的権威が監修した脳のサプリ", hook: "権威＋機能コピー（説明的）", tone: "説明的・淡々", person: "ブレデセン博士のみ", japanOnly: true, scene: false, userVoice: false, layout: "博士写真＋商品ボトル＋説明コピー", winFactors: [], loseFactors: ["感情の引きがない", "「脳のサプリ」コピーだけでは弱い", "NP01の劣化版"] },
+    { rank: 8, name: "認知機能対策篇", id: "-", cpo: 89091, tier: "low", mainCopy: "4つの認知機能の維持に効果を確認。", hook: "エビデンス訴求", tone: "理性的・説明的", person: "ブレデセン博士", japanOnly: false, scene: true, userVoice: false, layout: "機能説明＋生活シーンイラスト＋商品", winFactors: ["エビデンスの明示"], loseFactors: ["感情フックなし", "理性的すぎて手が止まらない"] },
+    { rank: 9, name: "脳を支える力篇", id: "-", cpo: 93846, tier: "low", mainCopy: "脳の4つの力", hook: "機能説明（抽象的）", tone: "説明的", person: "ブレデセン博士", japanOnly: true, scene: false, userVoice: false, layout: "脳イラスト＋4機能＋商品＋博士", winFactors: [], loseFactors: ["抽象的で自分事化しにくい", "感情トリガーなし", "デザインが教科書的"] },
+    { rank: 10, name: "老後のために篇", id: "NP07", cpo: 98000, tier: "low", mainCopy: "老後のために、脳の認知機能を維持する対策を始めましょう！", hook: "「老後」のネガティブワード", tone: "説教的・上から目線", person: "ブレデセン博士のみ", japanOnly: true, scene: false, userVoice: false, layout: "博士写真＋大文字コピー＋商品", winFactors: [], loseFactors: ["「老後」が自分事にしたくない言葉", "「始めましょう」が説教的", "希望感がない"] },
+    { rank: 11, name: "元気な今篇", id: "NP08", cpo: 112154, tier: "worst", mainCopy: "家族に心配をかける前に 元気な今こそ始める脳の認知機能対策", hook: "感情フック＋説明の混在（打ち消し）", tone: "急かし・行動促進", person: "ブレデセン博士のみ", japanOnly: true, scene: false, userVoice: false, layout: "NP01とほぼ同構成だがコピーが長い", winFactors: [], loseFactors: ["NP01の感情フックに説明を足して希釈", "コピーが長く一文のインパクト分散", "「元気な今こそ」が上から目線"] },
+  ];
+
+  const tierConfig = {
+    top: { label: "TOP", color: "#1a7a3a", bg: "#e8f5ec", border: "#b6dfca" },
+    mid: { label: "MID", color: "#8a6d00", bg: "#fef9e7", border: "#f0e0a0" },
+    low: { label: "LOW", color: "#b35900", bg: "#fff3e6", border: "#ffd6a5" },
+    worst: { label: "WORST", color: "#c0392b", bg: "#fdecea", border: "#f5b7b1" },
+  };
+
+  function Badge({ children, color, bg }) {
+    return (
+      <span style={{
+        display: "inline-block", padding: "2px 8px", borderRadius: "4px",
+        fontSize: "11px", fontWeight: 700, color: color, background: bg,
+        letterSpacing: "0.5px", lineHeight: "18px",
+      }}>{children}</span>
+    );
+  }
+
+  function Tag({ children, type }) {
+    const styles = { win: { color: "#1a7a3a", bg: "#e8f5ec", icon: "✓" }, lose: { color: "#c0392b", bg: "#fdecea", icon: "✗" } };
+    const s = styles[type];
+    return (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "4px", fontSize: "12px", lineHeight: "1.5", color: s.color, marginBottom: "3px" }}>
+        <span style={{ flexShrink: 0, fontWeight: 700 }}>{s.icon}</span>
+        <span>{children}</span>
+      </div>
+    );
+  }
+
+  function CPOBar({ value, max }) {
+    const pct = (value / max) * 100;
+    const best = 57056;
+    const hue = Math.max(0, 120 - (value - best) / (max - best) * 120);
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: "180px" }}>
+        <div style={{ flex: 1, height: "10px", background: "#f0f0f0", borderRadius: "5px", overflow: "hidden" }}>
+          <div style={{ width: `${pct}%`, height: "100%", background: `hsl(${hue}, 60%, 45%)`, borderRadius: "5px", transition: "width 0.6s ease" }} />
+        </div>
+        <span style={{ fontSize: "14px", fontWeight: 700, color: "#1a1a1a", fontFamily: "'DM Mono', monospace", minWidth: "70px", textAlign: "right" }}>¥{value.toLocaleString()}</span>
+      </div>
+    );
+  }
+
+  function App() {
+    const [expandedRow, setExpandedRow] = useState(null);
+    const [filterTier, setFilterTier] = useState("all");
+    const maxCPO = 112154;
+    const filtered = filterTier === "all" ? data : data.filter(d => d.tier === filterTier);
+
+    return (
+      <div style={{ fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif", maxWidth: "1000px", margin: "0 auto", padding: "24px 16px", color: "#1a1a1a" }}>
+
+        <div style={{ marginBottom: "28px" }}>
+          <h1 style={{ fontSize: "20px", fontWeight: 900, margin: "0 0 4px 0", letterSpacing: "-0.5px" }}>
+            ノンアルツBee 新聞原稿 CPO実績 × 要素分析
+          </h1>
+          <p style={{ fontSize: "13px", color: "#666", margin: 0 }}>
+            CPO（Cost Per Order）が低いほど獲得効率が良い ｜ 全11原稿をCPO順にランキング
+          </p>
+        </div>
+
+        {/* Summary Cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", marginBottom: "24px" }}>
+          <div style={{ background: "#e8f5ec", borderRadius: "10px", padding: "16px", borderLeft: "4px solid #1a7a3a" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a7a3a", marginBottom: "4px" }}>BEST CPO</div>
+            <div style={{ fontSize: "24px", fontWeight: 900, color: "#1a7a3a", fontFamily: "'DM Mono', monospace" }}>¥57,056</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>脳のサプリ篇（NP01）</div>
+          </div>
+          <div style={{ background: "#fdecea", borderRadius: "10px", padding: "16px", borderLeft: "4px solid #c0392b" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#c0392b", marginBottom: "4px" }}>WORST CPO</div>
+            <div style={{ fontSize: "24px", fontWeight: 900, color: "#c0392b", fontFamily: "'DM Mono', monospace" }}>¥112,154</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>元気な今篇（NP08）</div>
+          </div>
+          <div style={{ background: "#f0f4ff", borderRadius: "10px", padding: "16px", borderLeft: "4px solid #2c5ea8" }}>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#2c5ea8", marginBottom: "4px" }}>BEST vs WORST 差</div>
+            <div style={{ fontSize: "24px", fontWeight: 900, color: "#2c5ea8", fontFamily: "'DM Mono', monospace" }}>2.0倍</div>
+            <div style={{ fontSize: "12px", color: "#333", marginTop: "2px" }}>コピーと構成だけでCPOが2倍変わる</div>
+          </div>
+        </div>
+
+        {/* Filter */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "16px", flexWrap: "wrap" }}>
+          {[
+            { key: "all", label: "全て（11件）" },
+            { key: "top", label: "TOP（CPO〜6.5万）" },
+            { key: "mid", label: "MID（〜8万）" },
+            { key: "low", label: "LOW（〜10万）" },
+            { key: "worst", label: "WORST（10万〜）" },
+          ].map(f => (
+            <button key={f.key} onClick={() => setFilterTier(f.key)} style={{
+              padding: "6px 14px", borderRadius: "6px",
+              border: filterTier === f.key ? "2px solid #1a1a1a" : "1px solid #ddd",
+              background: filterTier === f.key ? "#1a1a1a" : "#fff",
+              color: filterTier === f.key ? "#fff" : "#555",
+              fontSize: "12px", fontWeight: filterTier === f.key ? 700 : 400, cursor: "pointer",
+            }}>{f.label}</button>
+          ))}
+        </div>
+
+        {/* Table */}
+        <div style={{ borderRadius: "12px", border: "1px solid #e0e0e0", overflow: "hidden", background: "#fff" }}>
+          <div style={{
+            display: "grid", gridTemplateColumns: "44px 1fr 200px 60px",
+            padding: "12px 16px", background: "#fafafa", borderBottom: "2px solid #e0e0e0",
+            fontSize: "11px", fontWeight: 700, color: "#888", letterSpacing: "0.5px", textTransform: "uppercase",
+          }}>
+            <div>#</div>
+            <div>原稿名 / メインコピー</div>
+            <div>CPO</div>
+            <div>評価</div>
+          </div>
+
+          {filtered.map((item, i) => {
+            const t = tierConfig[item.tier];
+            const isExpanded = expandedRow === item.rank;
+            return (
+              <div key={item.rank}>
+                <div onClick={() => setExpandedRow(isExpanded ? null : item.rank)} style={{
+                  display: "grid", gridTemplateColumns: "44px 1fr 200px 60px",
+                  padding: "14px 16px", borderBottom: "1px solid #f0f0f0", cursor: "pointer",
+                  background: isExpanded ? t.bg : (i % 2 === 0 ? "#fff" : "#fdfdfd"),
+                  transition: "background 0.2s", alignItems: "center",
+                }}>
+                  <div style={{ fontSize: "16px", fontWeight: 900, color: item.rank <= 3 ? t.color : "#999", fontFamily: "'DM Mono', monospace" }}>{item.rank}</div>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "14px", fontWeight: 700 }}>{item.name}</span>
+                      {item.id !== "-" && <span style={{ fontSize: "11px", color: "#999", fontFamily: "'DM Mono', monospace" }}>{item.id}</span>}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#777", marginTop: "3px", lineHeight: "1.4", maxWidth: "440px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: isExpanded ? "normal" : "nowrap" }}>
+                      {item.mainCopy}
+                    </div>
+                  </div>
+                  <CPOBar value={item.cpo} max={maxCPO} />
+                  <Badge color={t.color} bg={t.bg}>{t.label}</Badge>
+                </div>
+
+                {isExpanded && (
+                  <div style={{ padding: "16px 16px 16px 60px", background: t.bg, borderBottom: `2px solid ${t.border}` }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                      <div>
+                        <div style={{ fontSize: "11px", fontWeight: 700, color: "#888", marginBottom: "8px", letterSpacing: "0.5px" }}>構成要素</div>
+                        <table style={{ fontSize: "12px", lineHeight: "1.8", borderCollapse: "collapse", width: "100%" }}>
+                          <tbody>
+                            {[
+                              ["フック", item.hook], ["トーン", item.tone], ["人物", item.person],
+                              ["生活シーン", item.scene ? "あり" : "なし"], ["愛用者の声", item.userVoice ? "あり" : "なし"],
+                              ["レイアウト", item.layout],
+                            ].map(([label, val]) => (
+                              <tr key={label}>
+                                <td style={{ color: "#888", fontWeight: 500, paddingRight: "12px", whiteSpace: "nowrap", verticalAlign: "top" }}>{label}</td>
+                                <td style={{ color: "#333" }}>{val}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        {item.winFactors.length > 0 && (
+                          <div style={{ marginBottom: "12px" }}>
+                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#1a7a3a", marginBottom: "6px" }}>勝因</div>
+                            {item.winFactors.map((f, fi) => <Tag key={fi} type="win">{f}</Tag>)}
+                          </div>
+                        )}
+                        {item.loseFactors.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: "11px", fontWeight: 700, color: "#c0392b", marginBottom: "6px" }}>敗因</div>
+                            {item.loseFactors.map((f, fi) => <Tag key={fi} type="lose">{f}</Tag>)}
+                          </div>
+                        )}
+                        {item.winFactors.length === 0 && item.loseFactors.length === 0 && (
+                          <div style={{ fontSize: "12px", color: "#999" }}>（詳細分析なし）</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Insight Section */}
+        <div style={{ marginTop: "28px", padding: "20px", background: "linear-gradient(135deg, #1a1a1a, #2d2d2d)", borderRadius: "12px", color: "#fff" }}>
+          <h2 style={{ fontSize: "15px", fontWeight: 900, margin: "0 0 14px 0", letterSpacing: "-0.3px" }}>
+            CPOデータから読み取れる法則
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "14px", fontSize: "13px", lineHeight: "1.7" }}>
+            {[
+              { icon: "💡", title: "感情ファーストが最強", body: "TOP3はすべて感情（家族の心配・憧れ・驚き）から入っている。機能説明から入る原稿はすべてCPO 7.8万以上。" },
+              { icon: "🚫", title: "ネガティブワードは逆効果", body: "「老後」「衰える」が入った原稿はCPO 8〜10万台。読者は自分の衰えを直視したくない。" },
+              { icon: "🇯🇵", title: "日本人の推薦者がいると強い", body: "博士だけの権威訴求よりも、日本人教授や愛用者の顔が入ると共感・自分事化が進む。" },
+              { icon: "✂️", title: "コピーは短いほど効く", body: "NP01（CPO 5.7万）とNP08（CPO 11.2万）は構成がほぼ同じ。違いはコピーの長さだけ。説明を足すと感情が希釈される。" },
+            ].map((insight, i) => (
+              <div key={i} style={{ padding: "14px", background: "rgba(255,255,255,0.07)", borderRadius: "8px" }}>
+                <div style={{ fontSize: "13px", fontWeight: 700, marginBottom: "4px" }}>{insight.icon} {insight.title}</div>
+                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.75)", lineHeight: "1.6" }}>{insight.body}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: "16px", fontSize: "11px", color: "#aaa", textAlign: "right" }}>
+          ※ CPOは新聞出稿実績に基づく ｜ 各行クリックで詳細展開
+        </div>
+      </div>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+}
+</script>
+</body>
+</html>
