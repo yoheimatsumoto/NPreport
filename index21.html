@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>山田養蜂場「ノンアルツBee」お試しキャンペーン</title>
+    <style>
+        @charset "UTF-8";
+
+        /* 全体設定 */
+        html { font-size: 16px; }
+        body {
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            background-color: #e9ecef;
+            color: #333;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        h1, h2, h3, p { margin: 0; padding: 0; }
+
+        /* =========================================
+           ヘッダー（ロゴ）
+           ========================================= */
+        .page-header {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+        }
+        .site-logo {
+            width: 200px;
+            height: auto;
+            max-width: 100%;
+        }
+
+        /* =========================================
+           ファーストビュー
+           ========================================= */
+        .hero-section {
+            background: linear-gradient(135deg, #2a7c36, #1e5a25);
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 10px 30px;
+        }
+
+        .functional-label {
+            display: inline-block;
+            background-color: #ffffff;
+            color: #1e5a25;
+            padding: 6px 20px;
+            font-size: clamp(1.3rem, 5vw, 1.95rem);
+            font-weight: 900;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .product-title {
+            font-size: clamp(3rem, 14vw, 6.5rem); 
+            line-height: 1.1;
+            letter-spacing: 0;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .product-title small { font-size: 0.4em; vertical-align: super; }
+
+        .hero-divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            width: 95%;
+            margin: 0 auto 20px;
+        }
+
+        .catchphrase {
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+            margin-bottom: 45px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* === 4つの六角形 === */
+        .hexagon-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 5px;
+            box-sizing: border-box;
+            margin: 30px 0 40px;
+        }
+
+        .hex-outer {
+            width: 24%;
+            aspect-ratio: 1 / 1.1547;
+            background: #ffffff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        .hex-inner {
+            width: 92%;
+            height: 92%;
+            background: #ffdc00;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .hex-text {
+            font-size: clamp(1.6rem, 6.5vw, 3.4rem);
+            font-weight: 900;
+            color: #001f3f;
+            line-height: 1.05;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+        .hex-wrapper-with-badge {
+            width: 24%;
+            position: relative;
+        }
+
+        .hex-wrapper-with-badge .hex-outer {
+            width: 100%;
+        }
+
+        .hex-badge {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            background-color: #001f3f;
+            color: #ffffff;
+            padding: 6px 10px;
+            font-size: clamp(1rem, 3.2vw, 1.4rem);
+            font-weight: 900;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            white-space: nowrap;
+            z-index: 20;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateX(-50%) scale(0.5); 
+        }
+
+        /* アニメーション */
+        @keyframes flipIn {
+            0% { opacity: 0; transform: perspective(400px) rotateY(-90deg); }
+            100% { opacity: 1; transform: perspective(400px) rotateY(0deg); }
+        }
+        @keyframes popInBadge {
+            0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+            70% { transform: translateX(-50%) scale(1.1); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+
+        .animate-hex {
+            opacity: 0;
+            animation: flipIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .animate-badge {
+            animation: popInBadge 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.6s; }
+        .delay-3 { animation-delay: 1.0s; }
+        .delay-4 { animation-delay: 1.4s; }
+        .delay-5 { animation-delay: 2.1s; }
+
+        /* === 効果とサポート文言 === */
+        .hero-sub {
+            font-size: clamp(1.8rem, 6vw, 3.5rem);
+            margin-top: 20px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            line-height: 1.2;
+        }
+        .hero-effect {
+            display: block;
+            font-size: clamp(3rem, 12vw, 6.5rem);
+            font-weight: bold;
+            margin-top: 10px;
+            letter-spacing: 0.05em;
+        }
+        .hero-support {
+            font-size: clamp(1.4rem, 5vw, 2.8rem);
+            margin-top: 25px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.05em;
+        }
+        .hero-support small { font-size: 0.5em; vertical-align: super; }
+
+        .hero-footnotes {
+            font-size: clamp(0.6rem, 2vw, 0.85rem);
+            text-align: center;
+            margin-top: 35px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        /* =========================================
+           専門家の声セクション
+           ========================================= */
+        .authority-section {
+            background-color: #f4f1ea;
+            padding: 50px 15px;
+        }
+
+        .authority-section h2 {
+            font-size: clamp(1.6rem, 5vw, 2.2rem);
+            text-align: center;
+            color: #b71c1c;
+            margin-bottom: 30px;
+            font-weight: 900;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            letter-spacing: 0.05em;
+            line-height: 1.4;
+        }
+
+        /* --- ブレデセン博士エリア --- */
+        .main-expert-wrapper {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        
+        .main-expert-heading {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            color: #333;
+            font-weight: 900;
+            margin-bottom: 15px;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            line-height: 1.4;
+        }
+        
+        .main-expert-heading span {
+            color: #b71c1c;
+            font-size: 1.3em;
+            display: block;
+            margin-top: 5px;
+            text-decoration: underline;
+            text-decoration-color: #ffff66;
+            text-decoration-thickness: 4px;
+            text-underline-offset: -2px;
+        }
+
+        .main-expert-img {
+            width: 100%;
+            height: auto;
+            border: 4px solid #1e5a25;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-sizing: border-box;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* --- 日本の専門家カード --- */
+        .expert-card {
+            background: #fff;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media (min-width: 600px) {
+            .expert-card { flex-direction: row; }
+        }
+
+        .expert-photo-area {
+            flex: 0 0 45%;
+            background-color: #eee;
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .expert-photo-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .expert-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 5px;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-weight: bold;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .expert-text-area {
+            padding: 30px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .expert-quote {
+            font-size: clamp(1.4rem, 4.5vw, 2rem);
+            font-weight: bold;
+            color: #222;
+            line-height: 1.7;
+            border-left: 6px solid #2a7c36;
+            padding-left: 15px;
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            margin: 0;
+        }
+
+        .marker {
+            background-image: linear-gradient(transparent 60%, #ffff66 60%);
+            background-repeat: no-repeat;
+            background-size: 0% 100%;
+            animation: drawMarker 1.5s ease forwards;
+            display: inline;
+        }
+
+        @keyframes drawMarker {
+            to { background-size: 100% 100%; }
+        }
+
+        .marker-1 { animation-delay: 1.5s; }
+        .marker-2 { animation-delay: 2.5s; }
+        .marker-3 { animation-delay: 2.0s; }
+        .marker-4 { animation-delay: 3.0s; }
+
+        /* =========================================
+           エビデンス（グラフ）セクション
+           ========================================= */
+        .evidence-section {
+            background-color: #ffffff;
+            padding: 50px 15px 40px;
+            border-bottom: 5px solid #1e5a25;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        .evidence-section h2 {
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            text-align: center;
+            color: #333;
+            margin-bottom: 50px;
+            font-weight: 900;
+            line-height: 1.5;
+        }
+        
+        .evidence-section h2 span {
+            color: #00a0e9;
+            font-size: 1.1em; 
+            border-bottom: 3px solid #00a0e9;
+            display: inline; 
+        }
+
+        .evidence-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        @media (min-width: 600px) {
+            .evidence-container { flex-direction: row; }
+        }
+
+        .graph-box {
+            flex: 1;
+            background: #fdfdfd;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 30px 15px 20px; 
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin: 0 5px;
+        }
+
+        .hex-badges {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 25px;
+        }
+        .hex-badge-small {
+            background: #1e5a25;
+            color: #fff;
+            width: 90px;
+            height: 104px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.6rem; 
+            font-weight: bold;
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            line-height: 1.1;
+        }
+
+        .svg-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .svg-wrap svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .graph-line {
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            animation: drawGraph 4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+        }
+        
+        @keyframes drawGraph {
+            0%, 10% { stroke-dashoffset: 500; opacity: 1; }
+            40%, 85% { stroke-dashoffset: 0; opacity: 1; }
+            90%, 100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        .graph-popup {
+            position: absolute;
+            background-color: #00a0e9;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            width: 42%;
+            opacity: 0;
+            animation: popupFade 4s ease-in-out infinite;
+        }
+        
+        .popup-1 { top: 32%; left: 52%; }
+        .popup-2 { top: 26%; left: 52%; }
+
+        .graph-popup::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 15px 10px;
+            border-style: solid;
+            border-color: transparent transparent #00a0e9 transparent;
+        }
+
+        @keyframes popupFade {
+            0%, 35% { opacity: 0; transform: translateY(10px); }
+            45%, 85% { opacity: 1; transform: translateY(0); }
+            90%, 100% { opacity: 0; transform: translateY(0); }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #555;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color.active {
+            width: 20px; height: 4px; background: #00a0e9; position: relative;
+        }
+        .legend-color.active::after {
+            content:''; position:absolute; top:-4px; left:4px; width:12px; height:12px; border-radius:50%; background:#00a0e9;
+        }
+        .legend-color.placebo {
+            width: 20px; height: 3px; background: #999; position: relative;
+        }
+        .legend-color.placebo::after {
+            content:''; position:absolute; top:-3.5px; left:5px; width:10px; height:10px; background:#999;
+        }
+
+        .evidence-details {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .evidence-details p {
+            margin-bottom: 10px;
+        }
+        
+        .evidence-details p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .evidence-details span {
+            display: block;
+            margin-left: 1.2em;
+            text-indent: -1.2em; 
+        }
+
+        /* =========================================
+           実績セクション（70万本突破）
+           ========================================= */
+        .sales-record-section {
+            background-color: #fff;
+            padding: 0;
+            border-bottom: 5px solid #1e5a25;
+        }
+        
+        .sales-banner {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* =========================================
+           オファーバッジ
+           ========================================= */
+        .offer-wrapper {
+            background-color: #fff6eb;
+            padding: 40px 10px;
+            text-align: center;
+        }
+        .price-box {
+            background-color: #fff;
+            border: 5px solid #ff5722;
+            padding: 30px 15px;
+            margin: 0 auto;
+            max-width: 95%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .price-top {
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            font-weight: bold;
+            font-size: clamp(1.1rem, 4.5vw, 2rem);
+            color: #333;
+            border-bottom: 1px solid #999;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            letter-spacing: 0.02em;
+        }
+        .highlight-orange {
+            color: #ff5722;
+            font-size: 1.4em;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            font-weight: 900;
+        }
+        .price-main {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            color: #ff5722;
+            margin-bottom: 15px;
+        }
+        .price-number {
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-size: clamp(5.5rem, 25vw, 11rem);
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+        }
+        .price-unit {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            margin-left: 5px;
+        }
+        .tax-text {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: bold;
+            color: #ff5722;
+            margin-bottom: -5px;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+        .yen-text {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            line-height: 1;
+        }
+        .price-tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .green-tag {
+            background-color: #1e5a25;
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            padding: 10px 20px;
+            box-shadow: 0 4px 0 #123817;
+        }
+        .price-bottom {
+            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            font-weight: 900;
+            color: #d9534f;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        /* =========================================
+           クロージング・CTA
+           ========================================= */
+        .cta-section {
+            background-color: #fff8e1;
+            text-align: center;
+            padding: 50px 15px 70px;
+            font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+        }
+
+        .apply-button {
+            display: block;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 25px 10px;
+            background: linear-gradient(to bottom, #ff5722, #e64a19);
+            color: #ffffff;
+            font-size: clamp(1.5rem, 6vw, 2.2rem);
+            font-weight: 900;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 3px solid #fff;
+            box-shadow: 0 8px 0 #bf360c, 0 10px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .apply-button:active {
+            transform: translateY(8px);
+            box-shadow: 0 0 0 #bf360c, 0 5px 5px rgba(0,0,0,0.3);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #222;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <header class="page-header">
+            <img src="LOGO.png" alt="山田養蜂場" class="site-logo">
+        </header>
+
+        <section class="hero-section">
+            <div class="functional-label">機能性表示食品</div>
+            <h1 class="product-title">ノンアルツBee<small>®</small></h1>
+            <hr class="hero-divider">
+            <p class="catchphrase">年齢とともに低下する認知機能の</p>
+            
+            <div class="hexagon-container">
+                <div class="hex-outer animate-hex delay-1">
+                    <div class="hex-inner">
+                        <span class="hex-text">記憶<br>力</span>
+                    </div>
+                </div>
+                <div class="hex-outer animate-hex delay-2">
+                    <div class="hex-inner">
+                        <span class="hex-text">注意<br>力</span>
+                    </div>
+                </div>
+                <div class="hex-wrapper-with-badge animate-hex delay-3">
+                    <div class="hex-badge animate-badge delay-5">日本初!</div>
+                    <div class="hex-outer">
+                        <div class="hex-inner">
+                            <span class="hex-text">集中<br>力</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hex-outer animate-hex delay-4">
+                    <div class="hex-inner">
+                        <span class="hex-text">判断<br>力</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="hero-sub">4つの脳の働きに<br><span class="hero-effect">効果を確認</span></h2>
+            <p class="hero-support">認知機能<small>※1</small>の維持をサポート</p>
+            
+            <div class="hero-footnotes">
+                ※1 記憶力、注意力、集中力、判断力<br>
+                ※2 本製品の機能性は、プロポリスエキスほか5成分の組み合わせによるもの<br>
+                ※3 消費者庁の機能性表示食品データベースにおいて集中力の維持が届出表示として日本で初めて届出（2021年4月時点）<br>
+                ＊1 日常生活において会話や読み書きなどの基礎となる言葉や文字、行動を記憶し、思い出す力<br>
+                ＊2 必要とする情報に意識を向け、正確に対処する力 ＊3 情報を処理し正確に判断する力
+            </div>
+        </section>
+
+        <section class="authority-section">
+            <h2>脳研究の専門家たちが監修・推奨！</h2>
+            
+            <div class="main-expert-wrapper">
+                <h3 class="main-expert-heading">脳の世界的専門家 カリフォルニア大学 名誉教授<br><span>デール・ブレデセン博士が監修！</span></h3>
+                <img src="dale.jpg" alt="カリフォルニア大学 名誉教授 デール・ブレデセン博士" class="main-expert-img">
+            </div>
+
+            <div class="expert-card">
+                <div class="expert-photo-area">
+                    <img src="takagi.png" alt="高木美也子先生">
+                    <div class="expert-title">東京通信大学 特任教授<br>高木美也子先生 (73歳)</div>
+                </div>
+                <div class="expert-text-area">
+                    <p class="expert-quote">
+                        「<span class="marker marker-1">人生100年時代を有意義に過ごす</span>ためには、サプリなら<span class="marker marker-2">脳にうれしい成分を手軽に摂れます</span>よね。」
+                    </p>
+                </div>
+            </div>
+
+            <div class="expert-card">
+                <div class="expert-photo-area">
+                    <img src="konno.png" alt="今野裕之先生">
+                    <div class="expert-title">脳研究の専門家<br>今野裕之先生 (50歳)</div>
+                </div>
+                <div class="expert-text-area">
+                    <p class="expert-quote">
+                        「<span class="marker marker-3">認知機能は対策できる時代</span>になりました。<span class="marker marker-4">認知機能対策は早めに始める事が大事</span>です。」
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="evidence-section">
+            <h2>12週間の評価で、<br><span>4つの認知機能の維持が確認</span>されました！</h2>
+            
+            <div class="evidence-container">
+                <div class="graph-box">
+                    <div class="hex-badges">
+                        <div class="hex-badge-small">記憶<br>力</div>
+                        <div class="hex-badge-small">注意<br>力</div>
+                    </div>
+                    
+                    <div class="svg-wrap">
+                        <svg viewBox="0 0 450 320">
+                            <text x="30" y="55" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">2.0</text>
+                            <text x="30" y="130" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">1.0</text>
+                            <text x="30" y="205" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">0</text>
+                            <text x="30" y="280" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">-1.0</text>
+                          
+                            <line x1="40" y1="30" x2="40" y2="290" stroke="#333" stroke-width="2"/>
+                            <line x1="40" y1="290" x2="430" y2="290" stroke="#333" stroke-width="2"/>
+                            <line x1="40" y1="200" x2="430" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                          
+                            <text x="120" y="220" font-size="14" fill="#333" font-family="sans-serif" text-anchor="middle">飲用前</text>
+                            <text x="330" y="280" font-size="14" fill="#333" font-family="sans-serif" text-anchor="middle">飲用12週間後</text>
+                          
+                            <path class="graph-line placebo" d="M 120 200 L 330 230" fill="none" stroke="#999" stroke-width="3"/>
+                            <rect x="325" y="225" width="10" height="10" fill="#999"/>
+                          
+                            <path class="graph-line active" d="M 120 200 L 330 80" fill="none" stroke="#00a0e9" stroke-width="6"/>
+                            <circle cx="120" cy="200" r="7" fill="#00a0e9"/>
+                            <circle cx="330" cy="80" r="7" fill="#00a0e9"/>
+                            
+                            <text x="345" y="85" font-size="24" fill="#333" font-weight="bold">*</text>
+                        </svg>
+                        
+                        <div class="graph-popup popup-1">記憶し、正しく<br>思い出す</div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-color active"></span>ノンアルツBee</div>
+                        <div class="legend-item"><span class="legend-color placebo"></span>プラセボ</div>
+                    </div>
+                </div>
+
+                <div class="graph-box">
+                    <div class="hex-badges">
+                        <div class="hex-badge-small">注意<br>力</div>
+                        <div class="hex-badge-small">集中<br>力</div>
+                        <div class="hex-badge-small">判断<br>力</div>
+                    </div>
+                    
+                    <div class="svg-wrap">
+                        <svg viewBox="0 0 450 320">
+                            <text x="30" y="45" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">2</text>
+                            <text x="30" y="115" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">0</text>
+                            <text x="30" y="185" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">-2</text>
+                            <text x="30" y="255" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">-4</text>
+                            <text x="30" y="290" font-size="16" fill="#333" font-family="sans-serif" text-anchor="end">-5</text>
+                          
+                            <line x1="40" y1="30" x2="40" y2="300" stroke="#333" stroke-width="2"/>
+                            <line x1="40" y1="300" x2="430" y2="300" stroke="#333" stroke-width="2"/>
+                            <line x1="40" y1="110" x2="430" y2="110" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+                          
+                            <text x="120" y="130" font-size="14" fill="#333" font-family="sans-serif" text-anchor="middle">飲用前</text>
+                            <text x="330" y="290" font-size="14" fill="#333" font-family="sans-serif" text-anchor="middle">飲用12週間後</text>
+                          
+                            <path class="graph-line placebo" d="M 120 110 L 330 260" fill="none" stroke="#999" stroke-width="3"/>
+                            <rect x="325" y="255" width="10" height="10" fill="#999"/>
+                          
+                            <path class="graph-line active" d="M 120 110 L 330 60" fill="none" stroke="#00a0e9" stroke-width="6"/>
+                            <circle cx="120" cy="110" r="7" fill="#00a0e9"/>
+                            <circle cx="330" cy="60" r="7" fill="#00a0e9"/>
+                            
+                            <text x="345" y="65" font-size="24" fill="#333" font-weight="bold">*</text>
+                        </svg>
+                        
+                        <div class="graph-popup popup-2">正しく対処、<br>判断ができている</div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-color active"></span>ノンアルツBee</div>
+                        <div class="legend-item"><span class="legend-color placebo"></span>プラセボ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="evidence-details">
+                <p>認知機能の低下が疑われる40歳以上79歳以下の健常な日本人男女82名に、ノンアルツBeeまたはプラセボを、1日3粒、12週間摂取してもらった。</p>
+                <p><span>＊1 プラセボは、思い込みによる作用をなくすために用いられる偽薬や試験食のこと。</span></p>
+                <p><span>＊2 対話形式で、復唱して覚えた複数の単語を即座に思い出す「即時記憶課題」と、間を空けて思い出す「遅延記憶課題」を行い、総合的に記憶力（言語記憶力）や注意力を評価するテスト。</span></p>
+                <p><span>＊3 パソコンに表示される文字の意味と色の対応について回答するテスト。注意力や集中力、判断力が評価される。誤反応（ミスの回数）を点数化し、認知機能のうち、注意力や集中力、判断力を評価できる。点数が高いほどミスが少なかったことを示す。</span></p>
+            </div>
+        </section>
+
+        <section class="sales-record-section">
+            <img src="70man.jpg" alt="シリーズ累計販売数70万本突破" class="sales-banner">
+        </section>
+
+        <section class="offer-wrapper">
+            <div class="price-box">
+                <p class="price-top">約7日分2,060円相当が、約<span class="highlight-orange">45%OFF</span>の</p>
+                <div class="price-main">
+                    <span class="price-number">1,080</span>
+                    <div class="price-unit">
+                        <span class="tax-text">(税込)</span>
+                        <span class="yen-text">円</span>
+                    </div>
+                </div>
+                <div class="price-tags">
+                    <span class="green-tag">完全国内製造</span>
+                    <span class="green-tag">送料無料</span>
+                </div>
+                <p class="price-bottom">お得に試せるチャンス！</p>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2 style="font-size: clamp(1.4rem, 5vw, 1.8rem); color: #1e5a25; font-weight: 900; margin-bottom: 40px;">
+                脳の健康が気になるあなた、今すぐ対策を始めましょう。
+            </h2>
+            <button class="apply-button">お得なお試しセットに申し込む</button>
+        </section>
+
+        <footer>
+            <p>Copyright© 2026 All Rights Reserved DAIKO Advertising Inc.</p>
+        </footer>
+    </div>
+</body>
+</html>
